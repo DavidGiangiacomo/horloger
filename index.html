@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>L’horloger — établi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Posez des pignons sur une platine, regardez-les tourner. Un jeu de construction horlogère.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23d9b978' stroke='%236f5215' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23f6efe0' stroke='%232b2320' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header id="fiche">
+    <div class="fiche-card">
+      <h1>L’horloger</h1>
+      <p>Établi libre. Le barillet fait un tour par seconde et fournit 1,00 N·m. Le reste vous appartient.</p>
+    </div>
+    <dl class="stats">
+      <div class="stat stat-main"><dt>Période à l’aiguille</dt><dd id="stat-period">—</dd></div>
+      <div class="stat"><dt>Couple à l’aiguille</dt><dd id="stat-torque">—</dd></div>
+      <div class="stat"><dt>Frottements</dt><dd id="stat-eta">—</dd></div>
+      <div class="stat"><dt>Place libre</dt><dd id="stat-space">—</dd></div>
+      <div class="stat"><dt>Pièces posées</dt><dd id="stat-parts">0</dd></div>
+    </dl>
+  </header>
+
+  <main>
+    <div id="plate-wrap">
+      <svg id="plate" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Platine"></svg>
+      <div id="tooltip" hidden></div>
+      <div id="status" hidden></div>
+      <div id="jam" hidden></div>
+    </div>
+    <aside id="inventory">
+      <h2>Pièces</h2>
+      <div id="parts-list"></div>
+      <h2>Outils</h2>
+      <div class="tools">
+        <button id="btn-sound" type="button" aria-pressed="false">Son : coupé</button>
+        <button id="btn-fit" type="button">Recentrer la vue</button>
+        <button id="btn-help" type="button">Aide</button>
+        <button id="btn-clear" type="button" class="danger">Tout démonter</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer id="hint">
+    Glissez une pièce sur la platine : elle s’accroche d’elle-même à la distance d’engrènement, ou sur un axe existant pour s’y superposer.
+    Molette : zoom · fond glissé : déplacer · clic droit ou Suppr : retirer · Échap : annuler.
+  </footer>
+
+  <dialog id="help">
+    <h2>Comment ça marche</h2>
+    <ul>
+      <li>Deux pignons engrènent quand la distance entre leurs axes vaut la somme de leurs rayons. Il n’y a pas de connexion logique, seulement des positions.</li>
+      <li>Un pignon posé sur un axe déjà occupé tourne avec lui, à l’étage au-dessus. C’est ainsi qu’on démultiplie : une grande roue entraînée par un petit pignon, puis un petit pignon sur le même axe qui entraîne une autre grande roue.</li>
+      <li>Un train qui ralentit la rotation multiplie le couple d’autant, moins 3 % de frottement par étage. Le couple s’affiche en épaisseur de trait sur chaque axe.</li>
+      <li>Deux dentures qui se chevauchent grippent tout. Deux chemins qui imposent des vitesses différentes à la même roue bloquent tout. Ce sont de vraies situations, pas des erreurs.</li>
+      <li>L’aiguille se pose sur n’importe quel axe : la fiche affiche la durée d’un tour, en unités humaines.</li>
+      <li>Le mécanisme tourne en temps réel, y compris quand la page est fermée : revenez plus tard, les aiguilles auront bougé.</li>
+    </ul>
+    <form method="dialog"><button type="submit">Fermer</button></form>
+  </dialog>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
