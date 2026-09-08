@@ -6,6 +6,8 @@ export const PRESSURE_ANGLE = (20 * Math.PI) / 180;
 export const MESH_TOLERANCE = 0.6;             // mm — tolérance d'engrènement
 export const AXLE_TOLERANCE = 0.6;             // mm — deux centres confondus = même axe
 export const MAX_LAYERS = 4;                   // étages superposables sur un même axe
+export const ESC_GAP = 22;                     // mm — pivot de l'ancre au-delà du primitif de la roue
+export const ESC_FOOT = 16;                    // mm — encombrement d'un échappement sur son étage
 
 export function pitchRadius(z, m = MODULE) { return (m * z) / 2; }
 export function tipRadius(z, m = MODULE) { return pitchRadius(z, m) + m; }
@@ -31,6 +33,17 @@ export function collides(a, b) {
   if (d <= AXLE_TOLERANCE) return true; // deux pièces sur le même axe et le même étage
   if (meshes(a, b)) return false;
   return d < tipRadius(a.z) + tipRadius(b.z);
+}
+
+/** Un disque (x, y, r) tient-il dans la platine, union de rectangles ? Échantillonnage du contour. */
+export function insideShape(rects, x, y, r, samples = 16) {
+  const inside = (px, py) => rects.some((q) => px >= q.x - 1e-9 && px <= q.x + q.w + 1e-9 && py >= q.y - 1e-9 && py <= q.y + q.h + 1e-9);
+  if (!inside(x, y)) return false;
+  for (let i = 0; i < samples; i++) {
+    const a = (i * 2 * Math.PI) / samples;
+    if (!inside(x + r * Math.cos(a), y + r * Math.sin(a))) return false;
+  }
+  return true;
 }
 
 /** Intersections de deux cercles (pour accrocher un pignon à deux voisins à la fois). */

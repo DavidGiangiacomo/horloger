@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatPeriod, formatTorque, formatSpeed, UNITS } from '../src/format.js';
+import { formatPeriod, formatTorque, formatSpeed, formatPercent, UNITS } from '../src/format.js';
 
 const { MIN, HOUR, DAY, MONTH, YEAR } = UNITS;
 
@@ -35,6 +35,13 @@ test('le couple s’écrit en unités physiques, jamais en notation scientifique
   assert.equal(formatTorque(0.0123), '12,3 mN·m');
   assert.equal(formatTorque(4.5e-5), '45,0 µN·m');
   assert.equal(formatTorque(0), '—');
+});
+
+test('pourcentages', () => {
+  assert.equal(formatPercent(0.83), '83\u00a0%');
+  assert.equal(formatPercent(0.005), '0,5\u00a0%');
+  assert.equal(formatPercent(0.02), '2\u00a0%');
+  assert.equal(formatPercent(0), '0\u00a0%');
 });
 
 test('vitesse lisible', () => {
