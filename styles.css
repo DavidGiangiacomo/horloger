@@ -17,6 +17,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { height: 100%; margin: 0; }
 body {
   font-family: var(--font);
@@ -31,21 +32,33 @@ body {
 
 /* ---- Fiche (haut) ---- */
 #fiche {
-  display: flex;
-  align-items: stretch;
-  gap: 16px;
-  padding: 10px 16px;
   background: var(--parchemin);
   border-bottom: 3px solid var(--bois);
   box-shadow: 0 2px 8px rgba(0,0,0,.3);
 }
-.fiche-card { flex: 0 1 380px; min-width: 220px; }
-.fiche-card h1 { margin: 0 0 2px; font-size: 22px; font-weight: 600; letter-spacing: .5px; }
-.fiche-card p { margin: 0; font-size: 13px; color: var(--encre-douce); line-height: 1.35; }
+#tabs { display: flex; gap: 2px; padding: 6px 16px 0; background: var(--parchemin-fonce); border-bottom: 1px solid #c9b48e; }
+.tab {
+  border: 1px solid #c9b48e; border-bottom: none; border-radius: 6px 6px 0 0;
+  background: #ede3cc; color: var(--encre-douce); font-size: 12px; padding: 5px 12px;
+}
+.tab.active { background: var(--parchemin); color: var(--encre); font-weight: 600; }
+.tab.done::after { content: ' ✓'; color: #2e7d32; }
+.fiche-row { display: flex; align-items: stretch; gap: 16px; padding: 8px 16px 10px; }
+.fiche-card { flex: 0 1 520px; min-width: 260px; }
+.fiche-card h1 { margin: 0 0 2px; font-size: 19px; font-weight: 600; letter-spacing: .3px; }
+.fiche-card p { margin: 0; font-size: 13px; color: var(--encre-douce); line-height: 1.35; font-style: italic; }
+#exigences { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; }
+#exigences li::before { content: '○ '; color: var(--encre-douce); }
+#exigences li.ok { color: #2e7d32; }
+#exigences li.ok::before { content: '✓ '; }
+#exigences li.ko { color: var(--encre); }
+body.sandbox #exigences { display: none; }
+.stat-reserve .bar { height: 5px; background: #d9ccb0; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.stat-reserve .bar div { height: 100%; background: var(--bois-clair); width: 100%; transition: width .3s; }
 .stats { display: flex; gap: 18px; margin: 0; flex: 1; justify-content: flex-end; flex-wrap: wrap; }
 .stat { display: flex; flex-direction: column; justify-content: center; min-width: 110px; }
 .stat dt { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--encre-douce); }
-.stat dd { margin: 2px 0 0; font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stat dd { margin: 2px 0 0; font-size: 17px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stat-main dd { font-size: 26px; font-weight: 600; color: var(--bois); }
 .stat-main dd.bad { color: var(--rouge); }
 
@@ -70,11 +83,51 @@ main {
   max-width: 320px;
 }
 #status { left: 14px; bottom: 14px; }
+#jam.warn { background: rgba(184, 116, 29, .94); }
+#done {
+  position: absolute; right: 14px; top: 14px;
+  background: var(--parchemin); border: 2px solid #2e7d32; border-radius: 6px;
+  padding: 10px 14px; box-shadow: 0 3px 10px rgba(0,0,0,.3); text-align: center;
+}
+#done .done-title { font-size: 16px; font-weight: 600; color: #2e7d32; }
+#done #done-scores { font-size: 12px; color: var(--encre-douce); margin: 3px 0 8px; }
 #jam { left: 50%; top: 14px; transform: translateX(-50%); background: rgba(176, 50, 46, .92); font-size: 14px; }
 
 /* platine */
 .plate-shadow { fill: rgba(0,0,0,.35); }
-.plate { fill: #e8dcc1; stroke: #7b5a2c; stroke-width: 1.2; }
+.plate { fill: #e8dcc1; stroke: #7b5a2c; stroke-width: 1.2; stroke-linejoin: round; }
+.output-mark circle { fill: none; stroke: var(--bois); stroke-width: .8; stroke-dasharray: 2 1.5; }
+.output-mark circle + circle { fill: var(--bois); stroke: none; }
+.output-mark path { stroke: var(--bois); stroke-width: .6; }
+.output-mark text { fill: var(--bois); font-family: var(--font); font-style: italic; }
+
+/* arbres de renvoi, sous la platine */
+.shaft .shaft-bar { stroke: rgba(60, 40, 15, .35); stroke-width: 7; stroke-linecap: round; }
+.shaft .shaft-core { stroke: rgba(120, 95, 55, .55); stroke-width: 2.5; stroke-linecap: round; }
+.shaft-end { cursor: grab; }
+.shaft-end .bevel { fill: #b8a072; stroke: #5a3e22; stroke-width: .7; }
+.shaft-end .pivot { fill: #2b2320; }
+.shaft-ghost line { stroke: var(--bleu); stroke-width: 4; stroke-linecap: round; opacity: .5; }
+.shaft-ghost circle { fill: rgba(29,111,184,.35); stroke: var(--bleu); stroke-width: .8; }
+.shaft-ghost.invalid line, .shaft-ghost.invalid circle { stroke: var(--rouge); }
+.shaft-card .shaft-bar { stroke: #7a6244; stroke-width: 5; stroke-linecap: round; }
+.shaft-card .bevel { fill: #b8a072; stroke: #5a3e22; stroke-width: 1; }
+
+/* échappement : ancre et balancier */
+.escapement { cursor: grab; }
+.escapement .foot { fill: rgba(60, 40, 15, .06); stroke: none; }
+.escapement .anchor, .esc-card .anchor, .esc-ghost path { fill: #cfd3d8; stroke: #3f454d; stroke-width: .6; stroke-linejoin: round; }
+.escapement .pivot { fill: #2b2320; }
+.escapement .rim, .esc-card .rim { fill: none; stroke: #6f5215; stroke-width: 1.4; }
+.escapement .spokes, .esc-card .spokes { stroke: #6f5215; stroke-width: .7; }
+.escapement .balance-hub { fill: #2b2320; }
+.escapement.idle .anchor { opacity: .5; }
+.escapement.colliding .anchor { fill: #d9534f; stroke: var(--rouge); }
+.esc-ghost .foot { fill: rgba(29,111,184,.15); stroke: none; }
+.esc-ghost.invalid path { fill: rgba(176,50,46,.3); stroke: var(--rouge); }
+
+.gear .drum { fill: #b39a6a; stroke: #5b4210; stroke-width: 1; opacity: .85; }
+.gear.fixed { cursor: pointer; }
 .plate-grid { pointer-events: none; }
 .grid-minor { fill: none; stroke: rgba(90, 62, 34, .10); stroke-width: .3; }
 .grid-major { fill: none; stroke: rgba(90, 62, 34, .22); stroke-width: .5; }
@@ -100,6 +153,7 @@ main {
 .gear.colliding .teeth { fill: #d9534f; stroke: var(--rouge); }
 .gear.partner .teeth { stroke: var(--bleu); stroke-width: 1.4; }
 #plate.jammed .plate { fill: #e9d3c1; }
+.gear.source .z { font-size: 5px; }
 
 /* aiguille */
 .hand-piece { cursor: grab; }
@@ -143,8 +197,9 @@ main {
 .part-card.steel svg path { fill: var(--acier); stroke: var(--acier-fonce); stroke-width: .8; }
 .part-card .part-name { font-size: 12px; white-space: nowrap; }
 .part-card .part-meta { font-size: 10px; color: var(--encre-douce); }
-.hand-card { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 4px 10px; text-align: left; }
-.hand-card svg { width: 60px; height: 30px; margin: 0; }
+.part-card.wide { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 4px 10px; text-align: left; }
+.part-card.wide svg { width: 60px; height: 36px; margin: 0; flex: none; }
+.part-card.wide .part-name { white-space: normal; }
 
 .tools { display: flex; flex-direction: column; gap: 6px; }
 button {

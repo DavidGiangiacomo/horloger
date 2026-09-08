@@ -79,5 +79,6 @@ export function formatArea(mm2) {
 }
 
 export function formatPercent(v) {
-  return `${nf(Math.round(v * 100), 0)} %`;
+  const pct = v * 100;
+  return `${nf(pct, pct < 10 && Math.abs(pct - Math.round(pct)) > 1e-9 ? 1 : 0)}${NBSP}%`;
 }
